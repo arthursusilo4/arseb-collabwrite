@@ -246,7 +246,7 @@ export function createDOMRange(
   try {
     range.setStart(anchorDOM, anchorOffset);
     range.setEnd(focusDOM, focusOffset);
-  } catch (_) {
+  } catch {
     return null;
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
