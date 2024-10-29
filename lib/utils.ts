@@ -5,7 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export const getAccessType = (userType: UserType) => {
   switch (userType) {

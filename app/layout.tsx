@@ -5,10 +5,6 @@ import { Metadata } from "next"
 
 import {
   ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
 } from '@clerk/nextjs'
 import { dark } from "@clerk/themes"
 import Provider from "./Provider"

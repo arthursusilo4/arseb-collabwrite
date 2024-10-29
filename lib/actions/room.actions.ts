@@ -4,53 +4,50 @@ import { nanoid } from 'nanoid'
 import { liveblocks } from '../liveblocks';
 import { revalidatePath } from 'next/cache';
 import { getAccessType, parseStringify } from '../utils';
-import { error } from 'console';
-import { EmailAddress } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { title } from 'process';
 
 export const createDocument = async ({ userId, email }: CreateDocumentParams) => {
      const roomId = nanoid();
 
-          try {
-               const metadata = {
-                    creatorId: userId,
-                    email,
-                    title: 'Untitled'
-               }
+     try {
+          const metadata = {
+               creatorId: userId,
+               email,
+               title: 'Untitled'
+          };
 
-               const usersAccesses: RoomAccesses = {
-                    [email]: ['room:write']
-               }
+          const usersAccesses: RoomAccesses = {
+               [email]: ['room:write']
+          };
 
-               const room = await liveblocks.createRoom(roomId, {
-                    metadata,
-                    usersAccesses,
-                    defaultAccesses: []
-                  });
+          const room = await liveblocks.createRoom(roomId, {
+               metadata,
+               usersAccesses,
+               defaultAccesses: []
+          });
 
-                  revalidatePath('/');
+          revalidatePath('/');
 
-                  return parseStringify(room);
+          return parseStringify(room);
 
-          } catch (error) {
-               console.log(`Error happened`);
-          }
+     } catch (error) {
+          console.log(`Error happened`);
+     }
 }
 
-export const getDocument = async ({ roomId, userId}: {roomId: string, userId: string}) => {
+export const getDocument = async ({ roomId, userId }: { roomId: string, userId: string }) => {
      try {
           const room = await liveblocks.getRoom(roomId);
-     
+
           const hasAccess = Object.keys(room.usersAccesses).includes(userId);
-     
-          if(!hasAccess) {
+
+          if (!hasAccess) {
                throw new Error('You do not have access to this document');
           }
-          return parseStringify (room);
-     } 
+          return parseStringify(room);
+     }
      catch (error) {
-     console.log(`error happened while getting a room: ${error}`);
+          console.log(`Error happened while getting a room: ${error}`);
      }
 }
 
@@ -60,29 +57,23 @@ export const updateDocument = async (roomId: string, title: string) => {
                metadata: {
                     title
                }
-          })
+          });
 
           revalidatePath(`/documents/${roomId}`);
 
           return parseStringify(updatedRoom);
      } catch (error) {
-          console.log(`error happened`)
+          console.log(`Error happened`);
      }
 }
 
-export const getDocuments = async ( email: string ) => {
+export const getDocuments = async (email: string) => {
      try {
           const rooms = await liveblocks.getRooms({ userId: email });
-     
-          // const hasAccess = Object.keys(room.usersAccesses).includes(userId);
-     
-          // if(!hasAccess) {
-          //      throw new Error('You do not have access to this document');
-          // }
-          return parseStringify (rooms);
-     } 
+          return parseStringify(rooms);
+     }
      catch (error) {
-     console.log(`error happened while getting rooms: ${error}`);
+          console.log(`Error happened while getting rooms: ${error}`);
      }
 }
 
@@ -90,13 +81,13 @@ export const updateDocumentAccess = async ({ roomId, email, userType, updatedBy 
      try {
           const usersAccesses: RoomAccesses = {
                [email]: getAccessType(userType) as AccessType,
-          }
+          };
 
-          const room = await liveblocks.updateRoom( roomId, {
+          const room = await liveblocks.updateRoom(roomId, {
                usersAccesses
-          })
+          });
 
-          if(room) {
+          if (room) {
                const notificationId = nanoid();
 
                await liveblocks.triggerInboxNotification({
@@ -111,29 +102,29 @@ export const updateDocumentAccess = async ({ roomId, email, userType, updatedBy 
                          email: updatedBy.email,
                     },
                     roomId
-               })
+               });
           }
 
           revalidatePath(`/documents/${roomId}`);
           return parseStringify(room);
      } catch (error) {
-          console.log(`Error happened while updating a room access: ${error}`);
+          console.log(`Error happened while updating room access: ${error}`);
      }
 }
 
-export const removeCollaborator = async ({ roomId, email }: {roomId: string, email: string}) => {
+export const removeCollaborator = async ({ roomId, email }: { roomId: string, email: string }) => {
      try {
-          const room = await liveblocks.getRoom(roomId)
+          const room = await liveblocks.getRoom(roomId);
 
-          if(room.metadata.email === email) {
-               throw error('You cannot remove yourself from the document');
+          if (room.metadata.email === email) {
+               throw new Error('You cannot remove yourself from the document');
           }
 
           const updatedRoom = await liveblocks.updateRoom(roomId, {
                usersAccesses: {
                     [email]: null
                }
-          })
+          });
 
           revalidatePath(`/documents/${roomId}`);
           return parseStringify(updatedRoom);
@@ -142,12 +133,12 @@ export const removeCollaborator = async ({ roomId, email }: {roomId: string, ema
      }
 }
 
-export const deleteDocument = async ( roomId: string) => {
+export const deleteDocument = async (roomId: string) => {
      try {
           await liveblocks.deleteRoom(roomId);
           revalidatePath('/');
           redirect('/');
      } catch (error) {
-          console.log(`error happened while deleting a room: ${error}`)
+          console.log(`Error happened while deleting a room: ${error}`);
      }
 }
