@@ -242,12 +242,15 @@ export function createDOMRange(
     focusOffset = 1;
   }
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   try {
     range.setStart(anchorDOM, anchorOffset);
     range.setEnd(focusDOM, focusOffset);
   } catch (_) {
     return null;
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
 
   if (
     range.collapsed &&
