@@ -31,7 +31,7 @@ export const createDocument = async ({ userId, email }: CreateDocumentParams) =>
           return parseStringify(room);
 
      } catch (error) {
-          console.log(`Error happened`);
+          console.log(`Error happened: ${error}`);
      }
 }
 
@@ -63,7 +63,7 @@ export const updateDocument = async (roomId: string, title: string) => {
 
           return parseStringify(updatedRoom);
      } catch (error) {
-          console.log(`Error happened`);
+          console.log(`Error happened: ${error}`);
      }
 }
 
